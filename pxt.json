@@ -2,7 +2,9 @@
     "name": "project 3",
     "description": "",
     "dependencies": {
-        "device": "*"
+        "device": "*",
+        "light": "*",
+        "Color Fading": "github:jwunderl/pxt-color#v0.2.1"
     },
     "files": [
         "main.blocks",
