@@ -1,5 +1,6 @@
 function sprite (mySprite: Sprite) {
-    if (game.askForNumber("press 1 for fish and 2 for shark ", 1) == 1) {
+    userInput = game.askForNumber("press 1 for fish and 2 for shark ", 1)
+    if (true) {
         mySprite = sprites.create(img`
             . . . . . . . . . . . . . . . . 
             . . . . . . . c c c c c c . . . 
@@ -41,18 +42,18 @@ function sprite (mySprite: Sprite) {
     mySprite.setStayInScreen(true)
     controller.moveSprite(mySprite)
 }
+info.onCountdownEnd(function () {
+    game.over(true, effects.confetti)
+})
 info.onLifeZero(function () {
-    color.FadeToBlack.startScreenEffect()
-    pause(2000)
-    game.over(false)
-    game.splash("You lost!")
+    game.over(false, effects.melt)
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function (sprite2, otherSprite) {
     info.changeScoreBy(1)
     otherSprite.destroy(effects.bubbles, 500)
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite2, otherSprite) {
-    otherSprite.destroy()
+    otherSprite.destroy(effects.disintegrate, 500)
     info.changeLifeBy(-1)
 })
 function rock () {
@@ -77,6 +78,7 @@ function rock () {
 }
 let coins: Sprite = null
 let enemies: Sprite = null
+let userInput = 0
 let mySprite: Sprite = null
 sprite(mySprite)
 scene.setBackgroundImage(img`
@@ -202,8 +204,11 @@ scene.setBackgroundImage(img`
     6cccccccccccccc66666ccccccccccccccccccc666ccccc6666ccccccccccccccf666666666666ff6666ffffffff6666666666666666666ccccccccccccccc6cccccccccccccccccccccccccccccccc8
     `)
 info.setLife(3)
+info.startCountdown(30)
 game.onUpdateInterval(2000, function () {
-    rock()
+    timer.throttle("action", 500, function () {
+        rock()
+    })
 })
 forever(function () {
     coins = sprites.create(img`
