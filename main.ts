@@ -1,6 +1,5 @@
 function sprite (mySprite: Sprite) {
-    userInput = game.askForNumber("press 1 for fish and 2 for shark ", 1)
-    if (true) {
+    if (game.askForNumber("press 1 for fish and 2 for shark ", 1) == 1) {
         mySprite = sprites.create(img`
             . . . . . . . . . . . . . . . . 
             . . . . . . . c c c c c c . . . 
@@ -42,19 +41,29 @@ function sprite (mySprite: Sprite) {
     mySprite.setStayInScreen(true)
     controller.moveSprite(mySprite)
 }
-info.onCountdownEnd(function () {
+function endScreen () {
     game.over(true, effects.confetti)
+}
+info.onCountdownEnd(function () {
+    endScreen()
 })
-info.onLifeZero(function () {
+statusbars.onZero(StatusBarKind.Health, function (status) {
     game.over(false, effects.melt)
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function (sprite2, otherSprite) {
     info.changeScoreBy(1)
     otherSprite.destroy(effects.bubbles, 500)
 })
+function healthBar () {
+    statusbar = statusbars.create(20, 4, StatusBarKind.Health)
+    statusbar.value = 100
+    statusbar.positionDirection(CollisionDirection.Bottom)
+    statusbar.setLabel("HP")
+    statusbar.setBarBorder(1, 15)
+}
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite2, otherSprite) {
     otherSprite.destroy(effects.disintegrate, 500)
-    info.changeLifeBy(-1)
+    statusbar.value += -25
 })
 function rock () {
     enemies = sprites.create(img`
@@ -78,7 +87,7 @@ function rock () {
 }
 let coins: Sprite = null
 let enemies: Sprite = null
-let userInput = 0
+let statusbar: StatusBarSprite = null
 let mySprite: Sprite = null
 sprite(mySprite)
 scene.setBackgroundImage(img`
@@ -203,12 +212,10 @@ scene.setBackgroundImage(img`
     6cccccccccccccc66666ccccccccccccccccccc6666cccc6644bccccccccccccc8666666666666f66666ffffffff666666666666666666ccccccccccccccccccccccccccccccccccccccccccccccccc8
     6cccccccccccccc66666ccccccccccccccccccc666ccccc6666ccccccccccccccf666666666666ff6666ffffffff6666666666666666666ccccccccccccccc6cccccccccccccccccccccccccccccccc8
     `)
-info.setLife(3)
+healthBar()
 info.startCountdown(30)
 game.onUpdateInterval(2000, function () {
-    timer.throttle("action", 500, function () {
-        rock()
-    })
+    rock()
 })
 forever(function () {
     coins = sprites.create(img`
